@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Escape Game - Agent Secret</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .page { display: none; }
+    .active { display: block; }
+    img { max-width: 200px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<!-- Page 1 : Saisie du nom -->
+<div id="page1" class="page active">
+  <h2>Entrez votre prénom :</h2>
+  <input type="text" id="agentName">
+  <button onclick="validerNom()">Valider</button>
+  <p id="nomErreur" style="color: red;"></p>
+</div>
+
+<!-- Page 2 : Saisie du code -->
+<div id="page2" class="page">
+  <h2>Entrez votre code :</h2>
+  <input type="password" id="agentCode">
+  <button onclick="validerCode()">Valider</button>
+  <p id="codeErreur" style="color: red;"></p>
+</div>
+
+<!-- Page 3 : Indice -->
+<div id="page3" class="page">
+  <h2>Indice :</h2>
+  <div id="indiceContainer"></div>
+</div>
+
+<script>
+  // Données agents : nom => { code, indice: { type, valeur } }
+  const agents = {
+    "angel": { code: "1235", indice: { type: "emoji", valeur: "🎬" } },
+    "malie":   { code: "1188", indice: { type: "lettre", valeur: "A" } },
+    "juliette": { code: "2148", indice: { type: "image", valeur: "image.jpg" } },
+    "julien": { code: "3206", indice: { type: "audio", valeur: "video.mp4" } }
+  };
+
+  let agentActuel = null;
+
+  function validerNom() {
+    const nom = document.getElementById("agentName").value.trim().toLowerCase();
+    if (agents[nom]) {
+      agentActuel = nom;
+      document.getElementById("nomErreur").textContent = "";
+      changerPage("page2");
+    } else {
+      document.getElementById("nomErreur").textContent = "Nom inconnu.";
+    }
+  }
+
+  function validerCode() {
+    const code = document.getElementById("agentCode").value.trim();
+    if (agents[agentActuel].code === code) {
+      document.getElementById("codeErreur").textContent = "";
+      changerPage("page3");
+      afficherIndice();
+    } else {
+      document.getElementById("codeErreur").textContent = "Code incorrect.";
+    }
+  }
+
+  function afficherIndice() {
+    const { type, valeur } = agents[agentActuel].indice;
+    const container = document.getElementById("indiceContainer");
+    container.innerHTML = "";
+
+    if (type === "emoji" || type === "lettre") {
+      const p = document.createElement("p");
+      p.textContent = valeur;
+      container.appendChild(p);
+    } else if (type === "image") {
+      const img = document.createElement("img");
+      img.src = valeur;
+      img.alt = "Indice image";
+      container.appendChild(img);
+    } else if (type === "audio") {
+      const audio = document.createElement("audio");
+      audio.controls = true;
+      audio.src = valeur;
+      container.appendChild(audio);
+    }
+  }
+
+  function changerPage(id) {
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+  }
+</script>
+
+</body>
+</html>
